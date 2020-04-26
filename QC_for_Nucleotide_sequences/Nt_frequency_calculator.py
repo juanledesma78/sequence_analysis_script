@@ -21,7 +21,6 @@ for line in input_file:
         seq_line+=y.upper() 
 sequences.append(seq_line)
 
-
 IUPAC_nts = ['A', 'C', 'G', 'T', 'U', 'W', 'S', 'M', 'K', 'R', 'Y' , 'B', 'D', 'H', 'V', 'N']
 seqs_QC_not_passed = [] #kept to update the script with a tool to select the fasta sequences passing the QC
 for i in range(len(headers)):
