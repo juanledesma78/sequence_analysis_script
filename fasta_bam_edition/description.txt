@@ -1,0 +1,1 @@
+Scripts used to rename the fasta and bam files generated from FASTQ files from the INITIO project. 
