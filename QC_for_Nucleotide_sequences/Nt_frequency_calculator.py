@@ -1,52 +1,47 @@
 import sys
 inFile = sys.argv[1]
+#cutoff = sys.argv[2] #in case the cutoff is taken as argument at the time of running the script
 input_file = open(inFile, 'rt')
+output_name = inFile.replace('.fas','_Nucleotides_composition_QC.txt')
+QC_summary= open(output_name,'wt')
+
 seq_line=""
 headers=[]
 sequences=[]
-
-for l in input_file:
-    line = l.upper()
+comments = '\n'+'WARNING!'+'\n'+'The frequency of Ns in the following sequences is higher 20% so were excluded from the analysis:'+('\n')*2
+for line in input_file:
     if ">" in line:
-        hdr=line.strip('>')
+        hdr=(line.strip('>')).rstrip()
         if len(headers)>0: 
             sequences.append(seq_line)
         seq_line=""
-        y=hdr.rstrip()
-        headers.append(y)           
+        headers.append(hdr)           
     else:
-        y=line.rstrip()
-        seq_line+=y 
+        y=(line.rstrip()).replace('-','')
+        seq_line+=y.upper() 
 sequences.append(seq_line)
 
-fl_name = inFile.replace('.fas','_Nucelotides_composition.txt')
-QC_fl_name = inFile.replace('.fas','_NsFreq_QC_NOT_passed.txt')
-summary_file = open(fl_name,'wt')
-QC_file = open(QC_fl_name,'wt')
-QC_file.write('The frequency of Ns in the following sequences is higher 20% so were excluded from the analysis:'+('\n')*2)
 
 IUPAC_nts = ['A', 'C', 'G', 'T', 'U', 'W', 'S', 'M', 'K', 'R', 'Y' , 'B', 'D', 'H', 'V', 'N']
-
+seqs_QC_not_passed = [] #kept to update the script with a tool to select the fasta sequences passing the QC
 for i in range(len(headers)):
-    summary_title_col= headers[i] +'\t'+'n'+'\t' + 'Frequency'+ '\n'
-    summary_file.write(summary_title_col)
-    
+    title_columns= headers[i] +'\t'+'n'+'\t' + 'Frequency'+ '\n'
+    QC_summary.write(title_columns)
     for x in range(len(IUPAC_nts)):
-        
         if IUPAC_nts[x] in sequences[i]:
-            ungapped_sequence = sequences[i].replace('-','') #in case the sequence has gaps (-)
-            genome_length = len(ungapped_sequence)
+            genome_length = len(sequences[i])
             nt= sequences[i].count(IUPAC_nts[x])
             nt_PC = (nt*100)/genome_length
             nt_info = IUPAC_nts[x] + '\t'+ str(nt) + '\t'+ str("%.2f" % round(nt_PC,2)) +'%' + '\n'
-            summary_file.write(nt_info)
-            
+            QC_summary.write(nt_info)
             if IUPAC_nts[x] =='N':
-                if nt_PC > 20: 
-                    QC_file.write(headers[i] + '\t'+ str("%.2f" % round(nt_PC,2)) +'%' + '\n')
-            
-    summary_file.write('lentgh' + '\t'+ str(genome_length) + '\n'+ '\n')
-    
-summary_file.close()
-QC_file.close()
-
+                #if nt_PC > int(cutoff):
+                if nt_PC > 20:
+                    qc=headers[i] + '\t'+ str("%.2f" % round(nt_PC,2)) +'%' + '\n'
+                    comments +=qc
+                    seqs_QC_not_passed.append(headers[i])
+                
+    QC_summary.write('lentgh' + '\t'+ str(genome_length) + '\n'+ '\n')
+QC_summary.write(comments)
+QC_summary.close()
+input_file.close()
