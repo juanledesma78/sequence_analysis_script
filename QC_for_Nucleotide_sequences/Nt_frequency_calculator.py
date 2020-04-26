@@ -8,7 +8,7 @@ QC_summary= open(output_name,'wt')
 seq_line=""
 headers=[]
 sequences=[]
-comments = '\n'+'WARNING!'+'\n'+'The frequency of Ns in the following sequences is higher 20% so were excluded from the analysis:'+('\n')*2
+comments = '\n'+'WARNING!'+'\n'+'The frequency of undetermined nucleotides (Ns) in the following sequences is higher than 20% so they will be excluded from further analysis:'+('\n')*2
 for line in input_file:
     if ">" in line:
         hdr=(line.strip('>')).rstrip()
