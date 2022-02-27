@@ -16,6 +16,8 @@ txt =args.txt
 
 
 #current_directory = os.getcwd()
-path_to_INITIO = "testing_data/INITIO/"
-for fasta in glob.glob(os.path.join(path_to_INITIO,'*.fas')):
-    su.rename_fasta_quasibam_files(fasta)
+#path_to_INITIO = "testing_data/INITIO/"
+#for fasta in glob.glob(os.path.join(path_to_INITIO,'*.fas')):
+#    su.rename_fasta_quasibam_files(fasta)
+
+su.NcontentQC(fasta)
